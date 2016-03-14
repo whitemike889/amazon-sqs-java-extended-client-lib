@@ -21,11 +21,14 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -47,7 +50,9 @@ import com.amazonaws.services.sqs.model.InvalidMessageContentsException;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.MessageAttributeValue;
 import com.amazonaws.services.sqs.model.OverLimitException;
+import com.amazonaws.services.sqs.model.PurgeQueueInProgressException;
 import com.amazonaws.services.sqs.model.PurgeQueueRequest;
+import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
 import com.amazonaws.services.sqs.model.ReceiptHandleIsInvalidException;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
@@ -57,9 +62,6 @@ import com.amazonaws.services.sqs.model.SendMessageBatchResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.services.sqs.model.TooManyEntriesInBatchRequestException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Amazon SQS Extended Client extends the functionality of Amazon SQS client.
@@ -1161,7 +1163,8 @@ public class AmazonSQSExtendedClient extends AmazonSQSExtendedClientBase impleme
 	}
 
 	private void storeTextInS3(String s3Key, String messageContentStr, Long messageContentSize) {
-		InputStream messageContentStream = new ByteArrayInputStream(messageContentStr.getBytes(StandardCharsets.UTF_8));
+        Charset UTF8_CHARSET = Charset.forName("UTF-8");
+        InputStream messageContentStream = new ByteArrayInputStream(messageContentStr.getBytes(UTF8_CHARSET));
 		ObjectMetadata messageContentStreamMetadata = new ObjectMetadata();
 		messageContentStreamMetadata.setContentLength(messageContentSize);
 		PutObjectRequest putObjectRequest = new PutObjectRequest(clientConfiguration.getS3BucketName(), s3Key,
@@ -1182,7 +1185,8 @@ public class AmazonSQSExtendedClient extends AmazonSQSExtendedClientBase impleme
 	private static long getStringSizeInBytes(String str) {
 		CountingOutputStream counterOutputStream = new CountingOutputStream();
 		try {
-			Writer writer = new OutputStreamWriter(counterOutputStream, "UTF-8");
+		    Charset UTF8_CHARSET = Charset.forName("UTF-8");
+			Writer writer = new OutputStreamWriter(counterOutputStream, UTF8_CHARSET);
 			writer.write(str);
 			writer.flush();
 			writer.close();
