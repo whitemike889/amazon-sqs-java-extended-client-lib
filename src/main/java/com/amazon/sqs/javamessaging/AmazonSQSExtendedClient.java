@@ -83,7 +83,8 @@ import com.amazonaws.services.sqs.model.TooManyEntriesInBatchRequestException;
  * </ul>
  */
 public class AmazonSQSExtendedClient extends AmazonSQSExtendedClientBase implements AmazonSQS {
-	private static final Log LOG = LogFactory.getLog(AmazonSQSExtendedClient.class);
+
+    private static final Log LOG = LogFactory.getLog(AmazonSQSExtendedClient.class);
 
 	private ExtendedClientConfiguration clientConfiguration;
 
@@ -1120,7 +1121,10 @@ public class AmazonSQSExtendedClient extends AmazonSQSExtendedClientBase impleme
 		checkMessageAttributes(sendMessageRequest.getMessageAttributes());
 
 		String s3Key = UUID.randomUUID().toString();
-
+		// Optional. Allow more descriptive name to be tacked on the end of the S3 filename for debugging/operational support. 
+		if (sendMessageRequest.getMessageAttributes().get(SQSExtendedClientConstants.S3_FILENAME_SUFFIX)!=null) { 
+		    s3Key += sendMessageRequest.getMessageAttributes().get(SQSExtendedClientConstants.S3_FILENAME_SUFFIX);
+		}
 		// Read the content of the message from message body
 		String messageContentStr = sendMessageRequest.getMessageBody();
 
