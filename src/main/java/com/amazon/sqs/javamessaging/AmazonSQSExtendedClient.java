@@ -62,6 +62,7 @@ import com.amazonaws.services.sqs.model.SendMessageBatchResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.services.sqs.model.TooManyEntriesInBatchRequestException;
+import com.amazonaws.util.StringUtils;
 
 /**
  * Amazon SQS Extended Client extends the functionality of Amazon SQS client.
@@ -1122,8 +1123,10 @@ public class AmazonSQSExtendedClient extends AmazonSQSExtendedClientBase impleme
 
 		String s3Key = UUID.randomUUID().toString();
 		// Optional. Allow more descriptive name to be tacked on the end of the S3 filename for debugging/operational support. 
-		if (sendMessageRequest.getMessageAttributes().get(SQSExtendedClientConstants.S3_FILENAME_SUFFIX)!=null) { 
-		    s3Key += sendMessageRequest.getMessageAttributes().get(SQSExtendedClientConstants.S3_FILENAME_SUFFIX);
+		MessageAttributeValue suffixAttribute = sendMessageRequest.
+		        getMessageAttributes().get(SQSExtendedClientConstants.S3_FILENAME_SUFFIX);
+		if (suffixAttribute!=null && !StringUtils.isNullOrEmpty(suffixAttribute.getStringValue())) { 
+		    s3Key += suffixAttribute.getStringValue();
 		}
 		// Read the content of the message from message body
 		String messageContentStr = sendMessageRequest.getMessageBody();
