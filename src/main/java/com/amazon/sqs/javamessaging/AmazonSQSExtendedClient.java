@@ -1123,11 +1123,11 @@ public class AmazonSQSExtendedClient extends AmazonSQSExtendedClientBase impleme
 
 		String s3Key = UUID.randomUUID().toString();
 		// Optional. Allow more descriptive name to be tacked on the end of the S3 filename for debugging/operational support. 
-		MessageAttributeValue suffixAttribute = sendMessageRequest.
-		        getMessageAttributes().get(SQSExtendedClientConstants.S3_FILENAME_SUFFIX);
-		if (suffixAttribute!=null && !StringUtils.isNullOrEmpty(suffixAttribute.getStringValue())) { 
-		    s3Key += suffixAttribute.getStringValue();
-		}
+//		MessageAttributeValue suffixAttribute = sendMessageRequest.
+//		        getMessageAttributes().get(SQSExtendedClientConstants.S3_FILENAME_SUFFIX);
+//		if (suffixAttribute!=null && !StringUtils.isNullOrEmpty(suffixAttribute.getStringValue())) { 
+//		    s3Key += suffixAttribute.getStringValue();
+//		}
 		// Read the content of the message from message body
 		String messageContentStr = sendMessageRequest.getMessageBody();
 
